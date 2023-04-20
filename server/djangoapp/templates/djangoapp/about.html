@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        {% load static %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <title>About Us</title>
+
+    </head>
+    <body>
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Dealership Review</a>
+                </div>
+                <ul class="navbar-nav mr-auto" style="display: inline-block">
+                    <li >
+                        <a class="btn btn-link" href="{% url 'djangoapp:about' %}" >About Us</a>
+                        <a class="btn btn-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <h1 style="text-align: center;">About Us</h1>
+        <h6>
+            Welcome to Best Cars dealership, home to the best cars in North America. We sell domestic and imported cars at reasonable prices.
+        </h6>
+    </body>
+</html>
