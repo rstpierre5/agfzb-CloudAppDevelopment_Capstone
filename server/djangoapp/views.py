@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-# from .restapis import related methods
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -92,16 +92,57 @@ def registration_request(request):
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
-    context = {}
     if request.method == "GET":
-        return render(request, 'djangoapp/index.html', context)
+        url = "https://us-east.functions.appdomain.cloud/api/v1/web/1686f636-ea14-43bd-a3c1-b8a570415c60/dealership-package/get-dealership"
+        # Get dealers from the URL
+        dealerships = get_dealers_from_cf(url)
+        # Concat all dealer's short name
+        dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
+        # Return a list of dealer short name
+        return HttpResponse(dealer_names)
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
-# def get_dealer_details(request, dealer_id):
-# ...
+def get_dealer_details(request, dealer_id):
+    if request.method == "GET":
+        url = "https://us-east.functions.appdomain.cloud/api/v1/web/1686f636-ea14-43bd-a3c1-b8a570415c60/dealership-package/reviews"
+        # Get dealers from the URL
+        ratings = get_dealer_reviews_from_cf(url, dealer_id)
+        # Concat all dealer's short name
+        to_print = ' '.join([rating.review + " sentiment: " + rating.sentiment for rating in ratings])
+        # Return a list of dealer short name
+        return HttpResponse(to_print)
 
 # Create a `add_review` view to submit a review
-# def add_review(request, dealer_id):
-# ...
+def add_review(request):
+    
+    review = {}
+    if not request.user.is_authenticated:
+        return render(request, 'djangoapp/user_login.html', review)
 
+    
+    # Handles POST request
+    if request.method == "POST":
+        """
+        review["id"] = request.id
+        review["name"] = request.name
+        review["dealership"] = request.dealership
+        review["review"] = request.review
+        review["purchase"] = request.purchase
+        review["purchase_date"] = request.purchase_date
+        review["car_make"] = request.car_make
+        review["car_model"] = request.car_model
+        review["car_year"] = request.car_year
+        """
+        review["id"] = 111
+        review["time"] = datetime.utcnow().isoformat()
+        review["dealership"] = 11
+        review["review"] = "This is a great car dealer"
+        json_payload = {}
+        json_payload["review"] = review
+
+        json_result = post_request("https://us-east.functions.appdomain.cloud/api/v1/web/1686f636-ea14-43bd-a3c1-b8a570415c60/dealership-package/reviews",
+                                    json_payload)
+        return HttpResponse(json_result)
+    else:
+        return render(request, 'djangoapp/index.html', review)
