@@ -11,6 +11,76 @@
 
     </head>
     <body>
-    <!--Add review form here -->
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Dealership Review</a>
+                </div>
+                <ul class="navbar-nav mr-auto" style="display: inline-block">
+                    <li >
+                        <a class="btn btn-link" href="{% url 'djangoapp:about' %}" >About Us</a>
+                        <a class="btn btn-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
+                        <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Username" name="username" >
+                                <input type="password" class="form-control" placeholder="Password" name="psw" >
+                                <button class="btn btn-primary" type="submit">Login</button>
+                                <a class="btn btn-link" href="{% url 'djangoapp:register' %}">Sign Up</a>
+                            </div>
+                        </form>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <h2>Add a Review for {{full_name}}</h2>
+        <form action="{% url 'djangoapp:add_review' dealer_id full_name%}" method="post">
+            {% csrf_token %}
+            <div>
+                <label for="content"><b>Enter review content: </b> </label>
+                <textarea class="form-control" id="content" name="content" rows="2" required></textarea>
+            </div>
+            <br/>
+            <div>
+                <input class="checkbox"   type="checkbox" name="purchasecheck" id="purchasecheck">
+                <label for="purchasecheck" > <b>Purchased car from the dealer? (continue below if yes) </b></label>
+            </div>
+            <div>
+                <input class="form-check-input"  style="display: inline-block;" type="checkbox" name="purchasecheck" id="purchasecheck">
+            </div>
+            <br/>
+            <div>
+                <label for="car"><b> Select car (model-make-year) </b></label>
+                <select name="car" id="car" class="form-select" required>
+                    {% for car in cars %}
+                        <option selected value={{car.id}}>{{car.Name}}-{{car.car_make.Name}}-{{ car.Year|date:"Y" }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br/>
+            <div>
+                <label for="purchasedate"><b> Select purchase date </b></label>
+                <input class="date-own form-control" type="text" name="purchasedate" id="purchasedate">
+            </div>
+            <br/>
+            <button class="btn btn-primary" type="submit">Submit</button>
+
+        </form>
+        <script type="text/javascript">
+            $('.date-own').datepicker({
+               format: 'mm/dd/yyyy'
+             });
+       </script>
     </body>
 </html>

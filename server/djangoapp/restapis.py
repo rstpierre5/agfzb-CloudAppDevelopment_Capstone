@@ -81,21 +81,24 @@ def get_dealer_by_state_from_cf(url, state):
 def get_dealer_reviews_from_cf(url, dealer_id):
     results = []
     json_result = get_request(url, dealerId=dealer_id)
-    
     if json_result:
         # For each dealer object
         for review in json_result:
             # Create a CarDealer object with values in `doc` object
             review_obj = DealerReview(dealership=review["dealership"], name=review["name"], purchase=review["purchase"],
-                                   review=review["review"], id=review["id"])
+                                   review=review["review"])
             if("purchase_date" in review.keys()):
-                purchase_date=review["purchase_date"]
+                review_obj.purchase_date=review["purchase_date"]
             if("car_make" in review.keys()):
-                car_make=review["car_make"]
+                review_obj.car_make=review["car_make"]
             if("car_model" in review.keys()):
-                car_model=review["car_model"]
-
+                review_obj.car_model=review["car_model"]
+            if("car_year" in review.keys()):
+                review_obj.car_year=review["car_year"]
+            if("id" in review.keys()):
+                review_obj.id=review["id"]
             review_obj.sentiment = analyze_review_sentiments(review_obj.review)
+
             results.append(review_obj)
     return results
 
